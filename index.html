@@ -3,426 +3,264 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Daily leaderboard for the Voile Chic TikTok creator competition.">
-<meta property="og:title" content="Voile Chic Creator Board">
-<meta property="og:description" content="Three winners every day: top sales, most views and best helper.">
-<meta name="theme-color" content="#2a1424">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}*,*::before,*::after{box-sizing:inherit}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}*,*::before,*::after{box-sizing:inherit}body{margin:0}[hidden]{display:none!important}</style>
 <title>Voile Chic Creator Board</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<meta name="description" content="Voile Chic creator competition: today's leaders and your rank.">
+<meta property="og:title" content="Voile Chic Creator Board">
+<meta property="og:description" content="Three $20 winners every day. See who is leading and where you rank.">
+<meta name="theme-color" content="#151515">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap">
 <style id="css">
-/* Layout: a deep aubergine "race" band up top (countdown + three leaders), then a rose-tinted page of prize boards, your-stats finder, charts, videos, samples, winners. Phone-first; columns open up on wide screens. */
+/* Layout: one centered column, phone-first. One black-framed card holds the three leaders; everything else is one tap away. Voile Chic store look: white, black, square edges, spaced uppercase Arimo. */
 :root{
-  --bg:#f8f3f2; --surface:#ffffff; --fg:#26161f; --muted:#7d6872; --line:#ecdfe3;
-  --band:#2a1424; --band-fg:#f7e9ef; --band-muted:#c7a8b8; --band-line:#4a2a3e;
-  --rose:#b2477a; --rose-soft:#f6e3ec; --teal:#2f6f72; --teal-soft:#e0efee;
-  --gold:#a77a1c; --gold-soft:#f6ecd6; --silver:#8a8f99; --bronze:#a8673a;
-  --good:#2e7d4f; --warn:#a3601c;
-  --display:"Young Serif","Didot",Georgia,serif;
-  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --bg:#ffffff; --ink:#151515; --soft:#2d2d2d; --muted:#717171; --line:#dddddd;
+  --sand:#f4e9da; --bronze:#715939; --good:#2e7d4f;
+  --font:"Arimo","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#150e12; --surface:#1f161b; --fg:#f4e8ee; --muted:#b19ca7; --line:#35262f;
-  --band:#2a1424; --band-fg:#f7e9ef; --band-muted:#c7a8b8; --band-line:#4a2a3e;
-  --rose:#e98bb5; --rose-soft:#3b2130; --teal:#88cbc8; --teal-soft:#1c3332;
-  --gold:#e5bb62; --gold-soft:#3a2e16; --silver:#b9bec8; --bronze:#d99a6c;
-  --good:#7fcf9c; --warn:#e7a45f; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#150e12; --surface:#1f161b; --fg:#f4e8ee; --muted:#b19ca7; --line:#35262f;
-  --band:#2a1424; --band-fg:#f7e9ef; --band-muted:#c7a8b8; --band-line:#4a2a3e;
-  --rose:#e98bb5; --rose-soft:#3b2130; --teal:#88cbc8; --teal-soft:#1c3332;
-  --gold:#e5bb62; --gold-soft:#3a2e16; --silver:#b9bec8; --bronze:#d99a6c;
-  --good:#7fcf9c; --warn:#e7a45f; color-scheme:dark}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--band)}
-h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:-.005em}
-a{color:var(--rose)}
-button,select,input{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.muted{color:var(--muted)}
-.inner{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.cap{text-transform:uppercase;letter-spacing:.16em;font-weight:700;font-size:12px}
+.num{font-variant-numeric:tabular-nums}
 
-/* race band */
-.band{background:var(--band);color:var(--band-fg)}
-.band .inner{padding-block:22px 28px;display:flex;flex-direction:column;gap:22px}
-.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-size:18px;letter-spacing:.02em}
-.brand span{color:var(--band-muted);font-family:var(--body);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-left:8px;font-weight:700}
-.day-pick{position:relative}
-.day-pick select{appearance:none;-webkit-appearance:none;background:transparent;color:var(--band-fg);border:1px solid var(--band-line);border-radius:999px;padding:7px 34px 7px 14px;font-size:13px;font-weight:600;cursor:pointer}
-.day-pick select option{color:#26161f;background:#fff}
-.day-pick::after{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;border-right:2px solid var(--band-muted);border-bottom:2px solid var(--band-muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
-.hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:end}
-@media (min-width:760px){.hero{grid-template-columns:1.3fr 1fr}}
-.hero h1{font-size:clamp(30px,6.4vw,52px);line-height:1.04}
-.hero h1 em{font-style:normal;color:var(--rose)}
-.hero p{margin:8px 0 0;color:var(--band-muted);max-width:52ch}
-.clock{display:flex;flex-direction:column;gap:6px;justify-self:start}
-@media (min-width:760px){.clock{justify-self:end;text-align:right}}
-.clock .eyebrow{color:var(--band-muted)}
-.clock .t{font-family:var(--mono);font-size:clamp(30px,6vw,44px);font-weight:700;letter-spacing:.02em;line-height:1}
-.clock .s{font-size:12.5px;color:var(--band-muted)}
-.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#7fcf9c;margin-right:6px;vertical-align:1px}
-@media (prefers-reduced-motion:no-preference){.live-dot{animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}}
-.leaders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.leader{border:1px solid var(--band-line);border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;gap:8px;min-width:0;background:rgba(255,255,255,.03)}
-.leader .eyebrow{color:var(--band-muted);font-size:10.5px}
-.leader .who{display:flex;align-items:center;gap:8px;min-width:0}
-.leader .who b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
-.leader .v{font-family:var(--mono);font-size:13px;color:var(--band-muted)}
-.leader .prize{font-family:var(--mono);font-size:12px;color:#e5bb62}
-.leader.none .who b{color:var(--band-muted);font-weight:500}
-@media (max-width:520px){.leader .v{display:none}.leader{padding:12px 10px}}
-.av{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;text-transform:uppercase}
+.top{background:var(--ink);color:#fff;text-align:center;padding-block:14px}
+.top .wm{font-weight:700;letter-spacing:.32em;font-size:17px;text-transform:uppercase;padding-left:.32em}
+.top .sub{color:#bdbdbd;margin-top:4px;font-size:11px;letter-spacing:.24em}
 
-/* page */
-main.inner{padding-block:26px 64px;display:flex;flex-direction:column;gap:40px}
-.sec{display:flex;flex-direction:column;gap:14px}
-.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
-.sec-head h2{font-size:clamp(22px,4vw,28px)}
-.sec-head .note{font-size:13px;color:var(--muted)}
-.empty{color:var(--muted);font-size:14px;margin:0}
+.page{max-width:460px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px;display:flex;flex-direction:column;gap:16px}
 
-/* finder */
-.finder{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
-.finder label{font-weight:700;font-size:14px}
-.finder input{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;box-sizing:border-box}
-.me{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.me .cell{border-radius:12px;padding:12px;background:var(--bg);display:flex;flex-direction:column;gap:2px}
-.me .cell .k{font-size:12px;color:var(--muted);font-weight:600}
-.me .cell .v{font-family:var(--mono);font-size:18px;font-weight:700}
-.me .cell .r{font-size:12.5px;color:var(--muted)}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.head .day{font-size:13px;color:var(--muted)}
+.timer{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.timer b{color:var(--ink);font-variant-numeric:tabular-nums}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--good)}
 
-/* prize boards */
-.boards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
-.board{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
-.board-head{padding:16px 18px 14px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line)}
-.board-head .row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.board-head h3{font-size:21px}
-.tag{font-family:var(--mono);font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px}
-.board-head p{margin:0;font-size:13px;color:var(--muted)}
-.board.sales .board-head{border-top:4px solid var(--rose)}
-.board.views .board-head{border-top:4px solid var(--teal)}
-.board.helper .board-head{border-top:4px solid var(--gold)}
-.board.sales .tag{background:var(--rose-soft);color:var(--rose)}
-.board.views .tag{background:var(--teal-soft);color:var(--teal)}
-.board.helper .tag{background:var(--gold-soft);color:var(--gold)}
-.rank{list-style:none;margin:0;padding:6px 18px 14px;display:flex;flex-direction:column}
-.rank li{display:grid;grid-template-columns:26px 30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
-.rank li:first-child{border-top:0}
-.rank .pos{font-family:var(--display);font-size:19px;text-align:center;color:var(--muted)}
-.rank li:nth-child(1) .pos{color:var(--gold)}
-.rank li:nth-child(2) .pos{color:var(--silver)}
-.rank li:nth-child(3) .pos{color:var(--bronze)}
-.rank .mid{min-width:0;display:flex;flex-direction:column;gap:5px}
-.rank .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rank li:first-child .name{font-weight:800}
-.bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden}
-.bar i{display:block;height:100%;border-radius:3px}
-.board.sales .bar i{background:var(--rose)}
-.board.views .bar i{background:var(--teal)}
-.board.helper .bar i{background:var(--gold)}
-.rank .val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:700}
-.rank li.hl{background:var(--rose-soft);margin:0 -10px;padding-inline:10px;border-radius:10px}
-.board .empty{padding:10px 18px 18px}
-.status-line{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700}
-.status-line .won{color:var(--gold)}
-.status-line .lead{color:var(--good)}
+.card{border:2px solid var(--ink)}
+.card-title{background:var(--ink);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.card-title span:last-child{color:#cfcfcf;font-weight:400;letter-spacing:.08em;text-transform:none;font-size:12px}
+.lead{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:14px;border-top:1px solid var(--line);align-items:end}
+.lead:first-of-type{border-top:0}
+.lead .what{grid-column:1/-1;display:flex;justify-content:space-between;color:var(--muted)}
+.lead .what .prize{color:var(--bronze)}
+.lead .who{font-size:24px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.lead .val{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lead.none .who{color:#b5b5b5;font-weight:400;font-size:18px}
 
-/* charts */
-.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.chart{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0;display:flex;flex-direction:column;gap:6px}
-.chart .eyebrow{color:var(--muted)}
-.chart .big{font-family:var(--mono);font-size:22px;font-weight:700}
-.chart svg{width:100%;height:auto;display:block}
-.chart svg text{fill:var(--muted);font-family:var(--body);font-size:11px}
+.find{display:flex;flex-direction:column;gap:8px}
+.find input{border:1px solid var(--line);padding:13px 14px;font-size:16px;border-radius:0;background:#fff;width:100%;box-sizing:border-box}
+.find input::placeholder{color:#8a8a8a}
+.me{background:var(--sand);padding:12px 14px;font-size:15px;line-height:1.5}
+.me b{font-weight:700}
 
-/* video cards */
-.vids{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.vid{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.vid .top{display:flex;align-items:center;gap:10px;min-width:0}
-.vid .top div{min-width:0;display:flex;flex-direction:column}
-.vid .top b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vid .top span{font-size:12.5px;color:var(--muted)}
-.vid .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.vid .stats div{display:flex;flex-direction:column}
-.vid .stats .k{font-size:11.5px;color:var(--muted);font-weight:600}
-.vid .stats .v{font-family:var(--mono);font-weight:700;font-size:14px}
-.vid a{font-weight:700;font-size:13px;text-decoration:none}
+.more{border:1px solid var(--ink);background:#fff;padding:13px;cursor:pointer;width:100%}
+.more:hover{background:var(--ink);color:#fff}
 
-/* tables */
-.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:11px 14px;border-top:1px solid var(--line);white-space:nowrap}
-thead th{border-top:0;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
-td.r,th.r{text-align:right}
-td.num{font-family:var(--mono)}
-.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--rose-soft);color:var(--rose)}
-.pill.ok{background:var(--teal-soft);color:var(--teal)}
-.pill.warn{background:var(--gold-soft);color:var(--warn)}
-.pill.off{background:var(--line);color:var(--muted)}
-.who-cell{display:flex;align-items:center;gap:8px}
-.who-cell .av{width:24px;height:24px;font-size:10px}
+.detail{display:flex;flex-direction:column;gap:22px}
+.list h3{margin:0 0 6px;font-size:12px}
+.list ol{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+.list li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.list li .p{color:var(--muted);font-variant-numeric:tabular-nums}
+.list li .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list li .v{font-weight:700;font-variant-numeric:tabular-nums}
+.list li.me-row{background:var(--sand)}
+.list .empty{color:var(--muted);font-size:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.past{width:100%;border-collapse:collapse;font-size:14px}
+.past th,.past td{text-align:left;padding:9px 6px 9px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+.past th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--ink)}
+.scroll{overflow-x:auto}
 
-/* teaser + notes */
-.teaser{border-radius:16px;padding:20px;background:var(--band);color:var(--band-fg);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
-.teaser h3{font-size:22px}
-.teaser p{margin:0;color:var(--band-muted);max-width:56ch}
-.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;font-size:13.5px;color:var(--muted)}
-.rules b{color:var(--fg);display:block;margin-bottom:2px}
-.rules p{margin:0}
+.rules{font-size:13px;color:var(--muted);text-align:center;line-height:1.6}
+.rules b{color:var(--ink)}
 
-/* team controls */
-#admin{border:1.5px dashed var(--rose);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:18px;background:var(--surface)}
-.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px}
-.admin-block{display:flex;flex-direction:column;gap:10px;min-width:0}
-.admin-block h3{font-size:18px}
-.admin-block p{margin:0;font-size:13px;color:var(--muted)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.field{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
-.row .field{flex:1;min-width:140px}
-.btn{background:var(--rose);color:var(--surface);border:0;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer}
+/* team controls (admin board only) */
+#admin{border-top:2px solid var(--ink);padding-top:18px;display:flex;flex-direction:column;gap:22px}
+#admin h2{margin:0;font-size:13px}
+.blk{display:flex;flex-direction:column;gap:10px}
+.blk p{margin:0;font-size:13px;color:var(--muted)}
+.msg{white-space:pre-wrap;background:var(--sand);padding:12px 14px;font-size:14px;line-height:1.55;user-select:all}
+.btn{background:var(--soft);color:#fff;border:0;padding:12px 16px;cursor:pointer;border-radius:0}
+.btn:hover{background:#000}
 .btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px}
+.field{border:1px solid var(--line);padding:10px 12px;border-radius:0;background:#fff;min-width:0}
+.row .field{flex:1}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 10px;font-size:13px}
-.chip button{border:0;background:var(--line);border-radius:999px;width:22px;height:22px;cursor:pointer;line-height:1}
-.helper-row{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:8px;align-items:center}
-.helper-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.win-sel{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
-.save-msg{font-size:13px;min-height:1.5em}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);padding:4px 4px 4px 10px;font-size:13px}
+.chip button{border:0;background:#eee;width:22px;height:22px;cursor:pointer}
+.hp{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:8px;align-items:center;font-size:14px}
+.hp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{text-align:left;padding:8px 8px 8px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tbl td.r,.tbl th.r{text-align:right}
+.flag{background:var(--sand);padding:2px 6px;font-size:12px}
+.save-msg{font-size:13px;min-height:1.4em;color:var(--muted)}
 </style>
-
 </head>
 <body>
 <div id="app"></div>
 
 <script id="appjs">
 (function(){
+var MODE="public"; /* "admin" in the Claude board, "public" on the website */
+var PUBLIC_URL="https://tiktok-creator-board.vercel.app";
 var TZ="America/New_York";
 var state={"version":1,"product":"Instant Premium Jersey Hijab","timezone":"America/New_York","startDate":"2026-11-01","updatedAt":null,"roster":[],"videos":[],"daily":{},"samples":[],"winners":{}};
-var ui={day:null,isOwner:false,artifact:null,saving:false,msg:"",find:""};
+var ui={open:false,isOwner:false,artifact:null,saving:false,msg:"",find:"",copied:false,hday:null};
 try{ui.find=localStorage.getItem("vc_find")||""}catch(e){}
 var CATS=[
- {key:"sales",title:"Top sales",short:"Top sales",prize:"$20",rule:"Hijab sales from your affiliate orders during the day.",fmt:money},
- {key:"views",title:"Most views",short:"Most views",prize:"$20",rule:"Views on the hijab videos you post that day.",fmt:count},
- {key:"helper",title:"Best helper",short:"Best helper",prize:"$20",rule:"Following, commenting on and cheering for the other creators in the group.",fmt:pts}
+ {key:"sales",label:"Top sales",emoji:"💰",fmt:money},
+ {key:"views",label:"Most views",emoji:"👀",fmt:count},
+ {key:"helper",label:"Best helper",emoji:"🤝",fmt:pts}
 ];
-var AVC=["#b2477a","#2f6f72","#a77a1c","#6b4fa0","#3d6fa8","#a8673a","#4f8a5b","#9a3f5c"];
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function norm(h){return String(h||"").trim().replace(/^@+/,"").toLowerCase()}
-function money(n){return "$"+(Number(n)||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
-function count(n){return (Number(n)||0).toLocaleString("en-US")}
+function money(n){var v=Number(n)||0;return "$"+v.toLocaleString("en-US",{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2})}
+function count(n){var v=Number(n)||0;return v>=10000?(v/1000).toFixed(v>=100000?0:1)+"K":v.toLocaleString("en-US")}
 function pts(n){var v=Number(n)||0;return v+(v===1?" pt":" pts")}
-function av(h){var k=norm(h),s=0;for(var i=0;i<k.length;i++)s=(s*31+k.charCodeAt(i))>>>0;var ini=(k.replace(/[^a-z0-9]/g,"").slice(0,2)||"?");return '<span class="av" style="background:'+AVC[s%AVC.length]+'" aria-hidden="true">'+esc(ini)+'</span>'}
-function estParts(d){var o={};new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(d).forEach(function(p){o[p.type]=p.value});return o}
-function estDay(d){var p=estParts(d);return p.year+"-"+p.month+"-"+p.day}
-function todayEst(){return estDay(new Date())}
+function parts(d){var o={};new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(d).forEach(function(p){o[p.type]=p.value});return o}
+function estDay(d){var p=parts(d);return p.year+"-"+p.month+"-"+p.day}
+function today(){return estDay(new Date())}
 function addDay(s,n){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]+n,12)).toISOString().slice(0,10)}
-function niceDay(s){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2],12)).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",timeZone:"UTC"})}
-function midDay(s){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2],12)).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"UTC"})}
-function shortDay(s){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2],12)).toLocaleDateString("en-US",{month:"short",day:"numeric",timeZone:"UTC"})}
-function estTime(iso){try{return new Date(iso).toLocaleString("en-US",{timeZone:TZ,month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+" ET"}catch(e){return iso}}
-function ago(iso){if(!iso)return "not yet";var m=Math.round((Date.now()-new Date(iso).getTime())/60000);if(m<1)return "just now";if(m<60)return m+" min ago";var h=Math.round(m/60);if(h<48)return h+" h ago";return Math.round(h/24)+" days ago"}
-function rosterSet(){var s={};(state.roster||[]).forEach(function(r){s[norm(r.handle)]=true});return s}
-function days(){var out=[],d=state.startDate,t=todayEst();if(t<d)t=d;while(d<=t){out.push(d);d=addDay(d,1)}return out}
-function isClosed(d){return d<todayEst()}
-function started(){return todayEst()>=state.startDate}
+function fmtDay(s,long){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2],12)).toLocaleDateString("en-US",long?{weekday:"short",month:"short",day:"numeric",timeZone:"UTC"}:{month:"short",day:"numeric",timeZone:"UTC"})}
+function started(){return today()>=state.startDate}
+function secsToMidnight(){var p=parts(new Date());return Math.max(0,86400-(+p.hour*3600+ +p.minute*60+ +p.second))}
+function secsToStart(){var p=parts(new Date()),a=state.startDate.split("-").map(Number);return Math.max(0,Math.round((Date.UTC(a[0],a[1]-1,a[2])-Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second))/1000))}
+function hm(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h+"h "+(m<10?"0":"")+m+"m"}
+function roster(){var s={};(state.roster||[]).forEach(function(r){s[norm(r.handle)]=1});return s}
+function closedDays(){var out=[],d=state.startDate,t=today();while(d<t){out.push(d);d=addDay(d,1)}return out}
 
 function scores(cat,day){
-  var R=rosterSet(),m={};
-  if(cat==="views"){
-    (state.videos||[]).forEach(function(v){var h=norm(v.handle);if(!R[h]||!v.postedAt)return;if(estDay(new Date(v.postedAt))!==day)return;m[h]=(m[h]||0)+(Number(v.views)||0)});
-  }else{
-    var src=((state.daily||{})[day]||{})[cat]||{};
-    Object.keys(src).forEach(function(k){var h=norm(k);if(R[h])m[h]=(m[h]||0)+(Number(src[k])||0)});
-  }
+  var R=roster(),m={};
+  if(cat==="views"){(state.videos||[]).forEach(function(v){var h=norm(v.handle);if(R[h]&&v.postedAt&&estDay(new Date(v.postedAt))===day)m[h]=(m[h]||0)+(Number(v.views)||0)})}
+  else{var src=((state.daily||{})[day]||{})[cat]||{};Object.keys(src).forEach(function(k){var h=norm(k);if(R[h])m[h]=(m[h]||0)+(Number(src[k])||0)})}
   return Object.keys(m).filter(function(h){return m[h]>0}).map(function(h){return {h:h,v:m[h]}}).sort(function(a,b){return b.v-a.v||a.h.localeCompare(b.h)});
 }
-function winnerOf(cat,day){var w=(state.winners||{})[day];if(w&&w[cat])return {h:norm(w[cat]),locked:true};var s=scores(cat,day);return s.length?{h:s[0].h,v:s[0].v,locked:false}:null}
-
-function clockHtml(day){
-  if(!started()){var t=secsUntil(state.startDate);return '<div class="clock"><span class="eyebrow">Competition starts in</span><span class="t" id="clockT">'+hms(t)+'</span><span class="s">Midnight Eastern time, '+esc(midDay(state.startDate))+'</span></div>'}
-  if(isClosed(day))return '<div class="clock"><span class="eyebrow">This day is closed</span><span class="t" style="font-size:clamp(24px,5vw,34px)">Final</span><span class="s">Winners locked the next morning</span></div>';
-  return '<div class="clock"><span class="eyebrow"><span class="live-dot"></span>Today closes in</span><span class="t" id="clockT">'+hms(secsLeftToday())+'</span><span class="s">at midnight Eastern time</span></div>';
-}
-function secsLeftToday(){var p=estParts(new Date());return Math.max(0,86400-(Number(p.hour)*3600+Number(p.minute)*60+Number(p.second)))}
-function secsUntil(dayStr){var p=estParts(new Date());var a=dayStr.split("-").map(Number);var now=Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second),target=Date.UTC(a[0],a[1]-1,a[2]);return Math.max(0,Math.round((target-now)/1000))}
-function hms(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(x<10?"0":"")+x}
-
-function leadersHtml(day){
-  var closed=isClosed(day);
-  return '<div class="leaders">'+CATS.map(function(c){var w=winnerOf(c.key,day);
-    if(!w)return '<div class="leader none"><span class="eyebrow">'+esc(c.short)+'</span><div class="who"><b>No leader yet</b></div><span class="prize">'+c.prize+'</span></div>';
-    return '<div class="leader"><span class="eyebrow">'+esc(c.short)+(closed||w.locked?" · winner":" · leading")+'</span><div class="who">'+av(w.h)+'<b>@'+esc(w.h)+'</b></div><span class="prize">'+c.prize+(w.v!=null?' <span class="v">· '+esc(c.fmt(w.v))+'</span>':'')+'</span></div>'}).join("")+'</div>';
-}
-
-function boardHtml(c,day,me){
-  var all=scores(c.key,day),s=all.slice(0,5),w=winnerOf(c.key,day),closed=isClosed(day),top=s.length?s[0].v:0;
-  var meRow="";
-  if(me){var idx=-1;all.forEach(function(r,i){if(r.h===me)idx=i});if(idx>=5)meRow='<li class="hl"><span class="pos">'+(idx+1)+'</span>'+av(me)+'<span class="mid"><span class="name">@'+esc(me)+' (you)</span><span class="bar"><i style="width:'+(top?Math.max(3,all[idx].v/top*100):0)+'%"></i></span></span><span class="val">'+esc(c.fmt(all[idx].v))+'</span></li>'}
-  var list=s.length?'<ol class="rank">'+s.map(function(r,i){return '<li'+(r.h===me?' class="hl"':'')+'><span class="pos">'+(i+1)+'</span>'+av(r.h)+'<span class="mid"><span class="name">@'+esc(r.h)+'</span><span class="bar"><i style="width:'+(top?Math.max(3,r.v/top*100):0)+'%"></i></span></span><span class="val">'+esc(c.fmt(r.v))+'</span></li>'}).join("")+meRow+'</ol>'
-    :'<p class="empty">'+(c.key==="helper"?"The team hands out helper points through the day.":(started()?"No results yet. Post your video to get on the board.":"Opens at midnight Eastern time."))+'</p>';
-  var st="";
-  if(w)st='<div class="status-line">'+(closed||w.locked?'<span class="won">Winner: @'+esc(w.h)+'</span>':'<span class="lead">Leading now: @'+esc(w.h)+'</span>')+'</div>';
-  return '<article class="board '+c.key+'"><div class="board-head"><div class="row1"><h3>'+esc(c.title)+'</h3><span class="tag">'+c.prize+' a day</span></div><p>'+esc(c.rule)+'</p>'+st+'</div>'+list+'</article>';
-}
-
-function meHtml(day,me){
-  if(!me)return "";
-  var R=rosterSet();
-  if(!R[me])return '<p class="empty">@'+esc(me)+' isn’t on the competition list yet. Ask in the WhatsApp group to be added.</p>';
-  var cells=CATS.map(function(c){var all=scores(c.key,day),idx=-1,v=0;all.forEach(function(r,i){if(r.h===me){idx=i;v=r.v}});return '<div class="cell"><span class="k">'+esc(c.title)+'</span><span class="v">'+esc(c.fmt(v))+'</span><span class="r">'+(idx>=0?"Rank "+(idx+1)+" of "+all.length:"Not ranked yet")+'</span></div>'}).join("");
-  var n=(state.videos||[]).filter(function(v){return norm(v.handle)===me&&v.postedAt&&estDay(new Date(v.postedAt))===day}).length;
-  var smp=null;(state.samples||[]).forEach(function(s){if(norm(s.handle)===me)smp=s});
-  var ss=sampleStatus(smp,(state.videos||[]).filter(function(v){return norm(v.handle)===me}).length);
-  cells+='<div class="cell"><span class="k">Videos this day</span><span class="v">'+n+'</span><span class="r">Sample: '+esc(ss.label)+'</span></div>';
-  return '<div class="me">'+cells+'</div>';
-}
-
-function barChart(vals,labels,fmt,colorVar,day){
-  var W=520,H=200,L=50,B=26,T=12,Rr=8,max=Math.max.apply(null,vals.concat([0]));
-  var nice=niceMax(max),n=vals.length,iw=W-L-Rr,ih=H-T-B,bw=n?Math.min(34,iw/n*0.6):0;
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img">';
-  for(var g=0;g<=4;g++){var y=T+ih-ih*g/4;svg+='<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--line)" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end">'+esc(fmt(nice*g/4,true))+'</text>'}
-  var step=Math.ceil(n/7);
-  vals.forEach(function(v,i){var x=L+iw*(i+0.5)/n,h=nice?ih*v/nice:0;var sel=labels[i].day===day;svg+='<rect x="'+(x-bw/2)+'" y="'+(T+ih-h)+'" width="'+bw+'" height="'+h+'" rx="3" style="fill:var('+colorVar+');opacity:'+(sel?1:.45)+'"><title>'+esc(labels[i].t+": "+fmt(v))+'</title></rect>';if(i%step===0||i===n-1)svg+='<text x="'+x+'" y="'+(H-7)+'" text-anchor="middle">'+esc(labels[i].t)+'</text>'});
-  return svg+'</svg>';
-}
-function niceMax(m){if(m<=0)return 4;var p=Math.pow(10,Math.floor(Math.log10(m))),f=m/p;var s=f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10;return s*p}
-function shortMoney(v,axis){return axis?"$"+(v>=1000?(v/1000).toFixed(v%1000?1:0)+"k":Math.round(v)):money(v)}
-function shortCount(v,axis){return axis?(v>=1000?(v/1000).toFixed(v%1000?1:0)+"k":String(Math.round(v))):count(v)}
-
-function sampleStatus(s,n){
-  if(!s)return {label:"No sample",cls:"off"};
-  var st=String(s.status||"").toLowerCase();
-  if(st.indexOf("cancel")>=0||st.indexOf("reject")>=0)return {label:"Cancelled",cls:"off"};
-  if(s.delivered&&!n)return {label:"Has sample, no video yet",cls:"warn"};
-  if(s.delivered)return {label:"Received and posting",cls:"ok"};
-  if(s.shipped)return {label:"On its way",cls:""};
-  return {label:"Requested",cls:""};
-}
+function winner(cat,day){var w=(state.winners||{})[day];if(w&&w[cat]){var h=norm(w[cat]),s=scores(cat,day).filter(function(r){return r.h===h})[0];return {h:h,v:s?s.v:null}}var s2=scores(cat,day);return s2.length?{h:s2[0].h,v:s2[0].v}:null}
 
 function render(){
-  var ds=days();if(!ui.day||ds.indexOf(ui.day)<0)ui.day=ds[ds.length-1];
-  var day=ui.day,R=rosterSet(),rc=Object.keys(R).length,me=norm(ui.find);
-  var focusFind=document.activeElement&&document.activeElement.id==="findMe";
-  var h='';
-  // band
-  h+='<header class="band"><div class="inner"><div class="topline"><div class="brand">Voile Chic<span>Creator Board</span></div>'+
-     '<div class="day-pick"><label for="daySel" class="eyebrow" style="position:absolute;left:-9999px">Competition day</label><select id="daySel">'+ds.slice().reverse().map(function(d){return '<option value="'+d+'"'+(d===day?" selected":"")+'>'+esc(midDay(d))+(d===todayEst()?" · today":"")+'</option>'}).join("")+'</select></div></div>'+
-     '<div class="hero"><div><h1>'+(started()?(isClosed(day)?'Results for <em>'+esc(niceDay(day))+'</em>':'Today’s race for the <em>Instant Premium Jersey Hijab</em>'):'Three winners, <em>every single day</em>')+'</h1><p>Three $20 prizes every day: top sales, most views and best helper. Each day starts fresh at midnight Eastern time, so every new video is another chance.</p></div>'+clockHtml(day)+'</div>'+
-     leadersHtml(day)+'</div></header>';
+  var t=today(),live=started(),me=norm(ui.find),R=roster(),past=closedDays().reverse(),yday=past[0];
+  var h='<header class="top"><div class="wm">Voile Chic</div><div class="sub cap">Creator competition</div></header><main class="page">';
 
-  h+='<main class="inner">';
-  // finder
-  h+='<section class="finder"><label for="findMe">Find yourself on the board</label><input id="findMe" type="text" inputmode="text" autocomplete="off" placeholder="Type your TikTok handle, e.g. @yourname" value="'+esc(ui.find)+'"><div id="meBox">'+meHtml(day,me)+'</div></section>';
-
-  // boards
-  h+='<section class="sec"><div class="sec-head"><h2>'+(isClosed(day)?"Final top 5":"Top 5 right now")+'</h2><span class="note">'+rc+' creators competing · updated '+esc(ago(state.updatedAt))+'</span></div>';
-  if(!rc)h+='<p class="empty">Creators appear here once the Voile Chic team adds them to the competition.</p>';
-  h+='<div class="boards">'+CATS.map(function(c){return boardHtml(c,day,me)}).join("")+'</div></section>';
-
-  // teaser
-  h+='<section class="teaser"><div><span class="eyebrow" style="color:var(--band-muted)">Coming with the Black Friday sale</span><h3>A big surprise for our creators</h3></div><p>We can’t say more yet. Keep posting and stay tuned in the group.</p></section>';
-
-  // charts
-  var gmv=ds.map(function(d){return scores("sales",d).reduce(function(a,r){return a+r.v},0)});
-  var vws=ds.map(function(d){return scores("views",d).reduce(function(a,r){return a+r.v},0)});
-  var lab=ds.map(function(d){return {day:d,t:shortDay(d)}});
-  var totG=gmv.reduce(function(a,b){return a+b},0),totV=vws.reduce(function(a,b){return a+b},0);
-  h+='<section class="sec"><div class="sec-head"><h2>The competition so far</h2><span class="note">All competing creators together</span></div><div class="charts">'+
-     '<div class="chart"><span class="eyebrow">Sales per day</span><span class="big">'+money(totG)+'</span>'+barChart(gmv,lab,shortMoney,"--rose",day)+'</div>'+
-     '<div class="chart"><span class="eyebrow">Views on new videos per day</span><span class="big">'+count(totV)+'</span>'+barChart(vws,lab,shortCount,"--teal",day)+'</div></div></section>';
-
-  // videos
-  var vids=(state.videos||[]).filter(function(v){return R[norm(v.handle)]&&v.postedAt&&estDay(new Date(v.postedAt))===day}).sort(function(a,b){return (b.views||0)-(a.views||0)});
-  h+='<section class="sec"><div class="sec-head"><h2>Videos posted '+esc(midDay(day))+'</h2><span class="note">'+vids.length+' video'+(vids.length===1?"":"s")+', most viewed first</span></div>';
-  h+=vids.length?'<div class="vids">'+vids.map(function(v){var k=norm(v.handle);return '<article class="vid"><div class="top">'+av(k)+'<div><b>@'+esc(k)+'</b><span>'+esc(estTime(v.postedAt))+'</span></div></div><div class="stats"><div><span class="k">Views</span><span class="v">'+count(v.views)+'</span></div><div><span class="k">Orders</span><span class="v">'+count(v.orders)+'</span></div><div><span class="k">Sales</span><span class="v">'+money(v.gmv)+'</span></div></div>'+(v.url?'<a href="'+esc(v.url)+'" target="_blank" rel="noopener">Watch on TikTok →</a>':'')+'</article>'}).join("")+'</div>':'<p class="empty">No hijab videos from competing creators on this day yet.</p>';
+  // 1. the one thing to look at
+  var day=live?t:state.startDate;
+  h+='<div class="head"><span class="cap">'+(live?"Today":"Starts")+' · '+esc(fmtDay(day,true))+'</span><span class="timer">'+(live?'<span class="dot"></span>Ends in <b id="tm">'+hm(secsToMidnight())+'</b>':'Starts in <b id="tm">'+hm(secsToStart())+'</b>')+'</span></div>';
+  h+='<section class="card" aria-label="Leaders"><div class="card-title cap"><span>'+(live?"Leading now":"Today’s prizes")+'</span><span>$20 each</span></div>';
+  CATS.forEach(function(c){var w=live?winner(c.key,day):null;
+    h+='<div class="lead'+(w?'':' none')+'"><div class="what cap"><span>'+esc(c.label)+'</span><span class="prize">$20</span></div>'+
+       '<div class="who">'+(w?'@'+esc(w.h):(live?'No one yet':'Midnight ET'))+'</div><div class="val">'+(w&&w.v!=null?esc(c.fmt(w.v)):'')+'</div></div>'});
   h+='</section>';
 
-  // creators & samples
-  var sampleBy={};(state.samples||[]).forEach(function(s){sampleBy[norm(s.handle)]=s});
-  var lastPost={},nv={};(state.videos||[]).forEach(function(v){var k=norm(v.handle);if(!R[k]||!v.postedAt)return;nv[k]=(nv[k]||0)+1;if(!lastPost[k]||v.postedAt>lastPost[k])lastPost[k]=v.postedAt});
-  var rows=(state.roster||[]).map(function(r){var k=norm(r.handle);return {k:k,s:sampleBy[k],lp:lastPost[k],n:nv[k]||0}}).sort(function(a,b){return (b.lp||"").localeCompare(a.lp||"")||a.k.localeCompare(b.k)});
-  h+='<section class="sec"><div class="sec-head"><h2>Creators and samples</h2><span class="note">Who has a sample and when they last posted</span></div>';
-  h+=rows.length?'<div class="tbl-wrap"><table><thead><tr><th>Creator</th><th>Sample</th><th>Delivered</th><th class="r">Videos</th><th>Last posted</th></tr></thead><tbody>'+rows.map(function(r){var st=sampleStatus(r.s,r.n);return '<tr><td><span class="who-cell">'+av(r.k)+'@'+esc(r.k)+'</span></td><td><span class="pill '+st.cls+'">'+esc(st.label)+'</span></td><td>'+esc(r.s&&r.s.delivered?shortDay(r.s.delivered):"—")+'</td><td class="num r">'+r.n+'</td><td>'+esc(r.lp?estTime(r.lp):"Not yet")+'</td></tr>'}).join("")+'</tbody></table></div>':'<p class="empty">No creators added yet.</p>';
-  h+='</section>';
+  // 2. where am I
+  h+='<div class="find"><input id="find" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type your TikTok @ to see your rank" value="'+esc(ui.find)+'"><div id="meBox">'+meHtml(day,me,R)+'</div></div>';
 
-  // past winners
-  var past=ds.filter(isClosed).reverse();
-  h+='<section class="sec"><div class="sec-head"><h2>Hall of winners</h2></div>';
-  h+=past.length?'<div class="tbl-wrap"><table><thead><tr><th>Day</th>'+CATS.map(function(c){return '<th>'+esc(c.title)+'</th>'}).join("")+'</tr></thead><tbody>'+past.map(function(d){return '<tr><td>'+esc(midDay(d))+'</td>'+CATS.map(function(c){var w=winnerOf(c.key,d);return '<td>'+(w?'<span class="who-cell">'+av(w.h)+'@'+esc(w.h)+'</span>':'<span class="muted">—</span>')+'</td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div>':'<p class="empty">The first three winners go up after November 1 closes.</p>';
-  h+='</section>';
+  // 3. one tap for more
+  h+='<button class="more cap" id="moreBtn" aria-expanded="'+ui.open+'">'+(ui.open?"Hide details":"See full top 5 and past winners")+'</button>';
+  if(ui.open)h+=detailHtml(day,me,past);
 
-  // rules
-  h+='<section class="sec"><div class="sec-head"><h2>How winners are picked</h2></div><div class="rules">'+
-     '<p><b>Top sales</b>Affiliate orders of the Instant Premium Jersey Hijab placed that day, midnight to midnight Eastern time.</p>'+
-     '<p><b>Most views</b>Views on hijab videos posted that day. We check again the next morning before locking the winner, so late posts still count.</p>'+
-     '<p><b>Best helper</b>Chosen by the Voile Chic team: follow, comment on and support the other creators in the group.</p>'+
-     '<p><b>What to post</b>Only the Instant Premium Jersey Hijab. Post it, tag it and add it to your showcase. Numbers refresh every few hours from TikTok Shop.</p></div></section>';
+  h+='<p class="rules">Post the <b>Instant Premium Jersey Hijab</b>, tag it and add it to your showcase.<br>New winners every day at midnight Eastern.'+(state.updatedAt?'<br>Updated '+esc(ago(state.updatedAt))+'.':'')+'</p>';
 
-  if(ui.isOwner)h+=adminHtml(day);
+  if(MODE==="admin"&&ui.isOwner)h+=adminHtml(yday);
   h+='</main>';
+  var hadFocus=document.activeElement&&document.activeElement.id;
   document.getElementById("app").innerHTML=h;
   bind();
-  if(focusFind){var f=document.getElementById("findMe");if(f){f.focus();var L=f.value.length;try{f.setSelectionRange(L,L)}catch(e){}}}
+  if(hadFocus==="find"){var f=document.getElementById("find");f.focus();var L=f.value.length;try{f.setSelectionRange(L,L)}catch(e){}}
+}
+function ago(iso){var m=Math.round((Date.now()-new Date(iso).getTime())/60000);if(m<1)return "just now";if(m<60)return m+" min ago";var h=Math.round(m/60);return h<48?h+" h ago":Math.round(h/24)+" days ago"}
+
+function meHtml(day,me,R){
+  if(!me)return "";
+  if(!R[me])return '<div class="me">@'+esc(me)+' isn’t in the competition yet. Ask in the WhatsApp group.</div>';
+  if(!started())return '<div class="me">You’re in. The race starts at midnight Eastern.</div>';
+  var bits=CATS.map(function(c){var s=scores(c.key,day),i=-1;s.forEach(function(r,j){if(r.h===me)i=j});return '<b>'+esc(c.label)+':</b> '+(i>=0?'#'+(i+1)+' ('+esc(c.fmt(s[i].v))+')':'not ranked yet')});
+  return '<div class="me">'+bits.join('<br>')+'</div>';
+}
+function detailHtml(day,me,past){
+  var h='<div class="detail">';
+  if(started())CATS.forEach(function(c){var s=scores(c.key,day).slice(0,5);
+    h+='<div class="list"><h3 class="cap">'+esc(c.label)+' · top 5</h3><ol>'+(s.length?s.map(function(r,i){return '<li'+(r.h===me?' class="me-row"':'')+'><span class="p">'+(i+1)+'</span><span class="n">@'+esc(r.h)+'</span><span class="v">'+esc(c.fmt(r.v))+'</span></li>'}).join(""):'<li class="empty" style="display:block">No one yet today.</li>')+'</ol></div>'});
+  h+='<div class="list"><h3 class="cap">Past winners</h3>'+(past.length?'<div class="scroll"><table class="past"><thead><tr><th>Day</th>'+CATS.map(function(c){return '<th>'+esc(c.label)+'</th>'}).join("")+'</tr></thead><tbody>'+past.map(function(d){return '<tr><td>'+esc(fmtDay(d))+'</td>'+CATS.map(function(c){var w=winner(c.key,d);return '<td>'+(w?'@'+esc(w.h):'—')+'</td>'}).join("")+'</tr>'}).join("")+'</tbody></table></div>':'<div class="empty" style="color:var(--muted);font-size:14px;padding:10px 0;border-top:1px solid var(--ink)">The first winners are posted after Nov 1.</div>')+'</div>';
+  return h+'</div>';
 }
 
-function adminHtml(day){
-  var R=(state.roster||[]).map(function(r){return norm(r.handle)}).sort();
-  var hp=((state.daily||{})[day]||{}).helper||{};
-  var w=(state.winners||{})[day]||{};
-  var h='<section id="admin" aria-label="Team controls"><div class="sec-head"><h2>Team controls</h2><span class="note">Only you can see this section</span></div><div class="admin-grid">';
-  h+='<div class="admin-block"><h3>Competition creators</h3><p>Add the TikTok handles of the creators in the WhatsApp group. Only these creators appear on the board.</p><div class="row"><input class="field" type="text" id="addHandle" placeholder="@handle, or several separated by commas" autocomplete="off"><button class="btn" id="addBtn">Add</button></div><div class="chips">'+(R.length?R.map(function(k){return '<span class="chip">@'+esc(k)+'<button data-rm="'+esc(k)+'" aria-label="Remove @'+esc(k)+'">×</button></span>'}).join(""):'<span class="muted" style="font-size:13px">No creators yet.</span>')+'</div></div>';
-  h+='<div class="admin-block"><h3>Helper points · '+esc(midDay(day))+'</h3><p>Give points for following, commenting and supporting others. The highest score wins Best helper.</p>'+(R.length?R.map(function(k){return '<label class="helper-row" for="hp_'+esc(k)+'"><span>@'+esc(k)+'</span><input class="field" type="number" min="0" step="1" id="hp_'+esc(k)+'" data-hp="'+esc(k)+'" value="'+(hp[k]||"")+'" placeholder="0"></label>'}).join(""):'<span class="muted" style="font-size:13px">Add creators first.</span>')+'</div>';
-  h+='<div class="admin-block"><h3>Winners · '+esc(midDay(day))+'</h3><p>Leave on automatic to use the rankings, or pick a winner yourself.</p>'+CATS.map(function(c){return '<label class="win-sel" for="w_'+c.key+'">'+esc(c.title)+'<select class="field" id="w_'+c.key+'" data-win="'+c.key+'"><option value="">Automatic</option>'+R.map(function(k){return '<option value="'+esc(k)+'"'+(norm(w[c.key])===k?" selected":"")+'>@'+esc(k)+'</option>'}).join("")+'</select></label>'}).join("")+'</div>';
-  h+='</div><div class="row"><button class="btn" id="saveBtn"'+(ui.saving?" disabled":"")+'>'+(ui.saving?"Saving…":"Save changes")+'</button><span class="save-msg" role="status">'+esc(ui.msg)+'</span></div></section>';
-  return h;
+function winnersMessage(d){
+  if(!d)return "";
+  var lines=["🏆 VOILE CHIC WINNERS · "+fmtDay(d,true),""];
+  CATS.forEach(function(c){var w=winner(c.key,d);lines.push(c.emoji+" "+c.label+": "+(w?"@"+w.h+(w.v!=null&&c.key!=="helper"?" ("+c.fmt(w.v)+")":""):"no winner"))});
+  lines.push("","$20 each. Congrats! 🎉","New day, new chance. Post your Instant Premium Jersey Hijab video today.","","Your rank: "+PUBLIC_URL);
+  return lines.join("\n");
+}
+function adminHtml(yday){
+  var t=today(),hday=ui.hday||(started()?t:state.startDate);ui.hday=hday;
+  var Rl=(state.roster||[]).map(function(r){return norm(r.handle)}).sort();
+  var hp=((state.daily||{})[hday]||{}).helper||{},w=(state.winners||{})[hday]||{};
+  var days=[];var d=state.startDate,last=started()?t:state.startDate;while(d<=last){days.push(d);d=addDay(d,1)}
+  var h='<section id="admin" aria-label="Team controls"><h2 class="cap">Team controls · only you see this</h2>';
+  // winners message
+  h+='<div class="blk"><h2 class="cap">Daily winners message</h2>'+(yday?'<p>Ready for the WhatsApp group. Copy and paste.</p><div class="msg" id="msgTxt">'+esc(winnersMessage(yday))+'</div><button class="btn cap" id="copyBtn">'+(ui.copied?"Copied":"Copy message")+'</button>':'<p>Appears here after the first day closes.</p>')+'</div>';
+  // creators
+  h+='<div class="blk"><h2 class="cap">Creators in the competition ('+Rl.length+')</h2><p>Paste TikTok handles from the WhatsApp group. Commas or new lines both work.</p><div class="row"><input class="field" id="addH" type="text" autocomplete="off" placeholder="@name1, @name2"><button class="btn cap" id="addBtn">Add</button></div><div class="chips">'+Rl.map(function(k){return '<span class="chip">@'+esc(k)+'<button data-rm="'+esc(k)+'" aria-label="Remove @'+esc(k)+'">×</button></span>'}).join("")+'</div></div>';
+  // helper + winners
+  h+='<div class="blk"><h2 class="cap">Helper points and winners</h2><label class="ws">Day<select class="field" id="hday">'+days.slice().reverse().map(function(x){return '<option value="'+x+'"'+(x===hday?" selected":"")+'>'+esc(fmtDay(x,true))+'</option>'}).join("")+'</select></label>'+
+     (Rl.length?Rl.map(function(k){return '<label class="hp" for="hp_'+esc(k)+'"><span>@'+esc(k)+'</span><input class="field" type="number" min="0" step="1" id="hp_'+esc(k)+'" data-hp="'+esc(k)+'" value="'+(hp[k]||"")+'" placeholder="0"></label>'}).join(""):'<p>Add creators first.</p>')+
+     CATS.map(function(c){return '<label class="ws" for="w_'+c.key+'">'+esc(c.label)+' winner<select class="field" id="w_'+c.key+'" data-win="'+c.key+'"><option value="">Automatic (from rankings)</option>'+Rl.map(function(k){return '<option value="'+esc(k)+'"'+(norm(w[c.key])===k?" selected":"")+'>@'+esc(k)+'</option>'}).join("")+'</select></label>'}).join("")+'</div>';
+  h+='<div class="row"><button class="btn cap" id="saveBtn"'+(ui.saving?" disabled":"")+'>'+(ui.saving?"Saving…":"Save changes")+'</button></div><div class="save-msg" role="status">'+esc(ui.msg)+'</div>';
+  // samples + videos for the team
+  var nv={},lp={};(state.videos||[]).forEach(function(v){var k=norm(v.handle);nv[k]=(nv[k]||0)+1;if(!lp[k]||v.postedAt>lp[k])lp[k]=v.postedAt});
+  var sb={};(state.samples||[]).forEach(function(s){sb[norm(s.handle)]=s});
+  h+='<div class="blk"><h2 class="cap">Samples and posting</h2>'+(Rl.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Creator</th><th>Sample</th><th class="r">Videos</th><th>Last post</th></tr></thead><tbody>'+Rl.map(function(k){var s=sb[k],st=s?(s.delivered?(nv[k]?"Received":"<span class=\"flag\">Received, no video</span>"):(s.shipped?"Shipped":esc(s.status||"Requested"))):"None";return '<tr><td>@'+esc(k)+'</td><td>'+st+'</td><td class="r">'+(nv[k]||0)+'</td><td>'+(lp[k]?esc(fmtDay(estDay(new Date(lp[k])))):"—")+'</td></tr>'}).join("")+'</tbody></table></div>':'<p>No creators yet.</p>')+'</div>';
+  var vids=(state.videos||[]).filter(function(v){return v.postedAt&&estDay(new Date(v.postedAt))===hday}).sort(function(a,b){return (b.views||0)-(a.views||0)});
+  h+='<div class="blk"><h2 class="cap">Videos posted '+esc(fmtDay(hday,true))+' ('+vids.length+')</h2>'+(vids.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Creator</th><th class="r">Views</th><th class="r">Sales</th><th></th></tr></thead><tbody>'+vids.map(function(v){return '<tr><td>@'+esc(norm(v.handle))+'</td><td class="r">'+count(v.views)+'</td><td class="r">'+money(v.gmv)+'</td><td>'+(v.url?'<a href="'+esc(v.url)+'" target="_blank" rel="noopener">Watch</a>':'')+'</td></tr>'}).join("")+'</tbody></table></div>':'<p>None yet.</p>')+'</div>';
+  return h+'</section>';
 }
 
 function bind(){
-  var sel=document.getElementById("daySel");if(sel)sel.onchange=function(){if(ui.isOwner)collectAdmin();ui.day=sel.value;ui.msg="";render()};
-  var f=document.getElementById("findMe");
-  if(f)f.oninput=function(){ui.find=f.value;try{localStorage.setItem("vc_find",f.value)}catch(e){}var me=norm(f.value);document.getElementById("meBox").innerHTML=meHtml(ui.day,me);Array.prototype.forEach.call(document.querySelectorAll(".boards"),function(b){b.innerHTML=CATS.map(function(c){return boardHtml(c,ui.day,me)}).join("")})};
-  if(!ui.isOwner)return;
-  var add=document.getElementById("addBtn"),inp=document.getElementById("addHandle");
-  function doAdd(){collectAdmin();var have=rosterSet();(inp.value||"").split(/[,\s]+/).map(norm).filter(Boolean).forEach(function(k){if(!have[k]){state.roster.push({handle:k,added:todayEst()});have[k]=true}});inp.value="";ui.msg="Not saved yet. Press Save changes.";render()}
-  if(add)add.onclick=doAdd;
-  if(inp)inp.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();doAdd()}};
-  Array.prototype.forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){collectAdmin();var k=b.getAttribute("data-rm");state.roster=state.roster.filter(function(r){return norm(r.handle)!==k});ui.msg="Not saved yet. Press Save changes.";render()}});
-  var save=document.getElementById("saveBtn");if(save)save.onclick=doSave;
+  var f=document.getElementById("find");
+  if(f)f.oninput=function(){ui.find=f.value;try{localStorage.setItem("vc_find",f.value)}catch(e){}var me=norm(f.value),day=started()?today():state.startDate;document.getElementById("meBox").innerHTML=meHtml(day,me,roster());if(ui.open)render()};
+  var mb=document.getElementById("moreBtn");if(mb)mb.onclick=function(){ui.open=!ui.open;render()};
+  if(MODE!=="admin"||!ui.isOwner)return;
+  var cb=document.getElementById("copyBtn");if(cb)cb.onclick=function(){var txt=document.getElementById("msgTxt").textContent;var done=function(){ui.copied=true;render();setTimeout(function(){ui.copied=false;render()},2000)};try{navigator.clipboard.writeText(txt).then(done,function(){selectMsg()})}catch(e){selectMsg()}};
+  var add=document.getElementById("addBtn"),inp=document.getElementById("addH");
+  function doAdd(){collect();var have=roster();(inp.value||"").split(/[,\s]+/).map(norm).filter(Boolean).forEach(function(k){if(!have[k]){state.roster.push({handle:k,added:today()});have[k]=1}});ui.msg="Not saved yet. Press Save changes.";render()}
+  if(add)add.onclick=doAdd;if(inp)inp.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();doAdd()}};
+  Array.prototype.forEach.call(document.querySelectorAll("[data-rm]"),function(b){b.onclick=function(){collect();var k=b.getAttribute("data-rm");state.roster=state.roster.filter(function(r){return norm(r.handle)!==k});ui.msg="Not saved yet. Press Save changes.";render()}});
+  var hd=document.getElementById("hday");if(hd)hd.onchange=function(){collect();ui.hday=hd.value;render()};
+  var sv=document.getElementById("saveBtn");if(sv)sv.onclick=doSave;
 }
-function collectAdmin(){
+function selectMsg(){var el=document.getElementById("msgTxt");if(!el)return;var r=document.createRange();r.selectNodeContents(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r);ui.msg="Copy didn’t work here. The message is selected: copy it with your keyboard or long-press."}
+function collect(){
   if(!document.getElementById("admin"))return;
-  var day=ui.day;state.daily=state.daily||{};state.daily[day]=state.daily[day]||{};
-  var hp={};Array.prototype.forEach.call(document.querySelectorAll("[data-hp]"),function(i){var v=Number(i.value);if(v>0)hp[i.getAttribute("data-hp")]=v});
-  state.daily[day].helper=hp;
-  state.winners=state.winners||{};var w=state.winners[day]||{};
+  var d=ui.hday;state.daily=state.daily||{};state.daily[d]=state.daily[d]||{};
+  var hp={};Array.prototype.forEach.call(document.querySelectorAll("[data-hp]"),function(i){var v=Number(i.value);if(v>0)hp[i.getAttribute("data-hp")]=v});state.daily[d].helper=hp;
+  state.winners=state.winners||{};var w=state.winners[d]||{};
   Array.prototype.forEach.call(document.querySelectorAll("[data-win]"),function(s){var k=s.getAttribute("data-win");if(s.value)w[k]=s.value;else delete w[k]});
-  if(Object.keys(w).length)state.winners[day]=w;else delete state.winners[day];
+  if(Object.keys(w).length)state.winners[d]=w;else delete state.winners[d];
 }
 function buildDoc(){
-  var resetEl=document.head.querySelector("style");var reset=resetEl?resetEl.textContent:"";
+  var head=document.head.querySelector("style"),reset=head?head.textContent:"";
   var json=JSON.stringify(state).replace(/</g,"\\u003c");
+  var app=document.getElementById("appjs").textContent;
   return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'+
-    '<title>Voile Chic Creator Board</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'+
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">\n'+
-    '<style id="css">'+document.getElementById("css").textContent+'</style>\n\n<div id="app"></div>\n\n'+
-    '<script type="application/json" id="state">'+json+'<\/script>\n\n<script id="appjs">'+document.getElementById("appjs").textContent+'<\/script>\n</body></html>';
+    '<title>Voile Chic Creator Board</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap">\n'+
+    '<style id="css">'+document.getElementById("css").textContent+'</style>\n\n<div id="app"></div>\n<script type="application/json" id="state">'+json+'<\/script>\n<script id="appjs">'+app+'<\/script>\n</body></html>';
 }
 function doSave(){
   if(!ui.artifact){ui.msg="Saving isn’t available in this view. Open the board from your Claude account.";render();return}
-  collectAdmin();ui.saving=true;ui.msg="";render();
-  ui.artifact.publish(buildDoc()).then(function(){ui.saving=false;ui.msg="Saved.";render()},function(err){ui.saving=false;var c=err&&err.code;ui.msg=c==="conflict"?"The board was updated at the same moment, so it reloaded. Make your change again.":(c==="not_granted"||c==="not_writer")?"Only the board owner can save changes.":"Couldn’t save. Try again in a minute.";render()});
+  collect();ui.saving=true;ui.msg="";render();
+  ui.artifact.publish(buildDoc()).then(function(){ui.saving=false;ui.msg="Saved. The public site picks this up at the next hourly sync.";render()},function(err){ui.saving=false;var c=err&&err.code;ui.msg=c==="conflict"?"The board was updated at the same moment and reloaded. Make your change again.":(c==="not_granted"||c==="not_writer")?"Only the board owner can save.":"Couldn’t save. Try again in a minute.";render()});
 }
 
 function load(){fetch("data.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){if(d&&typeof d==="object"){state=d;state.roster=state.roster||[];render()}}).catch(function(){})}
-render();load();
-setInterval(function(){var t=document.getElementById("clockT");if(!t)return;if(!started())t.textContent=hms(secsUntil(state.startDate));else if(!isClosed(ui.day))t.textContent=hms(secsLeftToday())},1000);
-setInterval(function(){if(!(document.activeElement&&document.activeElement.id==="findMe"))load()},5*60*1000);
+render();
+setInterval(function(){var el=document.getElementById("tm");if(el)el.textContent=hm(started()?secsToMidnight():secsToStart())},20000);
+if(MODE==="public"){load();setInterval(function(){if(!(document.activeElement&&document.activeElement.id==="find"))load()},5*60*1000)}
+if(MODE==="admin"&&window.claude&&window.claude.use){
+  window.claude.use("user").then(function(u){return u&&u.isOwner?u.isOwner():false}).then(function(o){if(o){ui.isOwner=true;render()}}).catch(function(){});
+  window.claude.use("artifact").then(function(a){ui.artifact=a||null}).catch(function(){});
+}
 })();
 </script>
 </body>
