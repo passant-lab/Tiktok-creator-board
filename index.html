@@ -79,6 +79,18 @@ button,input,select{font:inherit;color:inherit}
 .track i{display:block;height:100%;background:var(--ink)}
 .bars li:first-child .track i{background:var(--bronze)}
 .bars-empty,.bars-me{color:var(--muted);font-size:14px;padding:10px 0}
+.chart-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.chart-head h3{margin:0}
+.seg.mini{margin:0;width:auto;grid-auto-columns:auto}
+.seg.mini button{padding:6px 10px;font-size:11px}
+.line-wrap{border:1px solid var(--line);padding:6px 4px 2px;margin-top:2px}
+svg.line{width:100%;height:auto;display:block}
+svg.line text{fill:#8a8a8a;font-family:var(--font);font-size:10px}
+svg.line text.ini{fill:#fff;font-size:8px;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;padding:8px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend span.me{font-weight:700}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
 .past{width:100%;border-collapse:collapse;font-size:14px}
 .past th,.past td{text-align:left;padding:9px 6px 9px 0;border-bottom:1px solid var(--line);white-space:nowrap}
 .past th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--ink)}
@@ -122,7 +134,7 @@ var MODE="public"; /* "admin" in the Claude board, "public" on the website */
 var PUBLIC_URL="https://tiktok-creator-board.vercel.app";
 var TZ="America/New_York";
 var state={"version":1,"product":"Instant Premium Jersey Hijab","timezone":"America/New_York","startDate":"2026-11-01","updatedAt":null,"roster":[],"videos":[],"daily":{},"samples":[],"winners":{}};
-var ui={period:"day",metric:"sales",open:false,isOwner:false,artifact:null,saving:false,msg:"",find:"",copied:false,hday:null};
+var ui={period:"week",metric:"sales",mode:"cum",open:false,isOwner:false,artifact:null,saving:false,msg:"",find:"",copied:false,hday:null};
 try{ui.find=localStorage.getItem("vc_find")||""}catch(e){}
 var CATS=[
  {key:"sales",label:"Top sales",emoji:"💰",fmt:money},
@@ -172,7 +184,7 @@ function render(){
   h+='<div class="find"><input id="find" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type your TikTok @ to see your rank" value="'+esc(ui.find)+'"><div id="meBox">'+meHtml(day,me,R)+'</div></div>';
 
   // 3. one tap for more
-  h+='<button class="more cap" id="moreBtn" aria-expanded="'+ui.open+'">'+(ui.open?"Hide details":"See top 10 and past winners")+'</button>';
+  h+='<button class="more cap" id="moreBtn" aria-expanded="'+ui.open+'">'+(ui.open?"Hide details":"See performance chart and past winners")+'</button>';
   if(ui.open)h+=detailHtml(day,me,past);
 
   h+='<p class="rules">Post the <b>Instant Premium Jersey Hijab</b>, tag it and add it to your showcase.<br>Each round runs 10am to 10am Eastern. New winners every day.'+(state.updatedAt?'<br>Updated '+esc(ago(state.updatedAt))+'.':'')+'</p>';
@@ -195,7 +207,7 @@ function meHtml(day,me,R){
 }
 
 /* top-performers chart: one metric, one period, top 5 as bars */
-var PERIODS=[{key:"day",label:"Today"},{key:"week",label:"This week"},{key:"month",label:"This month"}];
+var PERIODS=[{key:"week",label:"This week"},{key:"month",label:"This month"}];
 function periodDays(day,p){
   var out=[],d=state.startDate;
   var a=day.split("-").map(Number),dt=new Date(Date.UTC(a[0],a[1]-1,a[2],12));
@@ -209,17 +221,40 @@ function periodScores(cat,day,p){
   var m={};periodDays(day,p).forEach(function(d){scores(cat,d).forEach(function(r){m[r.h]=(m[r.h]||0)+r.v})});
   return Object.keys(m).map(function(h){return {h:h,v:m[h]}}).sort(function(a,b){return b.v-a.v||a.h.localeCompare(b.h)});
 }
+var LINE_COLORS=["#715939","#151515","#2f6f72","#9a3f5c","#8a8f99"];
+function niceMax(m){if(m<=0)return 4;var r=m/4,p=Math.pow(10,Math.floor(Math.log10(r))),f=r/p;var st=[1,1.5,2,2.5,3,4,5,6,8,10].filter(function(x){return x>=f-1e-9})[0];return st*p*4}
+function axisFmt(key,v){if(key==="sales")return "$"+(v>=1000?(v/1000).toFixed(v%1000?1:0)+"K":Math.round(v));return v>=1000?(v/1000).toFixed(v%1000?1:0)+"K":String(Math.round(v))}
 function chartHtml(day,me){
   var c=CATS.filter(function(x){return x.key===ui.metric})[0]||CATS[0];
-  var all=periodScores(c.key,day,ui.period),top=all.slice(0,10),max=top.length?top[0].v:0;
+  var ds=periodDays(day,ui.period),all=periodScores(c.key,day,ui.period),top=all.slice(0,10),lines=all.slice(0,5);
+  var seg=function(list,cur,attr,cls){return '<div class="seg'+(cls?' '+cls:'')+'" role="group">'+list.map(function(o){return '<button class="'+(o.key===cur?"on":"")+'" data-'+attr+'="'+o.key+'" aria-pressed="'+(o.key===cur)+'">'+esc(o.label)+'</button>'}).join("")+'</div>'};
+  var h='<div class="list"><div class="chart-head"><h3 class="cap">Performance</h3>'+seg([{key:"cum",label:"Total"},{key:"daily",label:"Daily"}],ui.mode,"mode","mini")+'</div>'+
+    seg(PERIODS,ui.period,"per")+seg(CATS.map(function(x){return {key:x.key,label:x.label.replace(/^(Top|Most|Best) /,"")}}),c.key,"met");
+  if(!lines.length)return h+'<div class="bars-empty">No results yet for this period.</div></div>';
+  // series: one line per top-5 creator, a point per round
+  var ser=lines.map(function(r){var run=0;return {h:r.h,vals:ds.map(function(d){var v=0;scores(c.key,d).forEach(function(x){if(x.h===r.h)v=x.v});run+=v;return ui.mode==="cum"?run:v})}});
+  var max=niceMax(Math.max.apply(null,ser.map(function(s){return Math.max.apply(null,s.vals)})));
+  var W=400,H=210,L=40,Rp=26,T=14,B=24,iw=W-L-Rp,ih=H-T-B,n=ds.length;
+  var X=function(i){return L+(n===1?iw/2:iw*i/(n-1))},Y=function(v){return T+ih-ih*v/max};
+  var svg='<svg class="line" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(c.label)+' over time">';
+  for(var g=0;g<=4;g++){var y=T+ih-ih*g/4;svg+='<line x1="'+L+'" x2="'+(W-Rp)+'" y1="'+y+'" y2="'+y+'" stroke="#eeeeee"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end">'+esc(axisFmt(c.key,max*g/4))+'</text>'}
+  var step=Math.max(1,Math.ceil(n/6));
+  ds.forEach(function(d,i){if(i%step===0||i===n-1)svg+='<text x="'+X(i)+'" y="'+(H-6)+'" text-anchor="middle">'+esc(fmtDay(d))+'</text>'});
+  ser.slice().reverse().forEach(function(s,ri){var k=ser.length-1-ri,col=LINE_COLORS[k],hl=me&&s.h===me;
+    var pts=s.vals.map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1)}).join(" ");
+    if(n>1)svg+='<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="'+(hl?3.5:2.2)+'" stroke-linejoin="round" stroke-linecap="round"/>';
+  });
+  var marks=ser.map(function(s,k){return {k:k,h:s.h,y:Y(s.vals[n-1])}}).sort(function(p,q){return p.y-q.y});
+  for(var mi=1;mi<marks.length;mi++)if(marks[mi].y-marks[mi-1].y<20)marks[mi].y=marks[mi-1].y+20;
+  var over=marks.length?marks[marks.length-1].y-(T+ih):0;if(over>0)marks.forEach(function(m){m.y-=over});
+  marks.forEach(function(m){var lx=X(n-1),col=LINE_COLORS[m.k],ini=m.h.replace(/[^a-z0-9]/g,"").slice(0,2).toUpperCase()||"?";
+    svg+='<circle cx="'+lx+'" cy="'+m.y+'" r="10" fill="'+col+'" stroke="#fff" stroke-width="2"/><text class="ini" x="'+lx+'" y="'+(m.y+3.2)+'" text-anchor="middle">'+esc(ini)+'</text>'});
+  svg+='</svg>';
+  h+='<div class="line-wrap">'+svg+'</div><div class="legend">'+ser.map(function(s,k){return '<span'+(me&&s.h===me?' class="me"':'')+'><i style="background:'+LINE_COLORS[k]+'"></i>@'+esc(s.h)+'</span>'}).join("")+'</div>';
+  // ranked top 10 for the same period
+  h+='<h3 class="cap" style="margin-top:14px">Top 10 · '+esc((PERIODS.filter(function(p){return p.key===ui.period})[0]||{}).label||"")+'</h3><ol>'+top.map(function(r,i){return '<li'+(r.h===me?' class="me-row"':'')+'><span class="p">'+(i+1)+'</span><span class="n">@'+esc(r.h)+'</span><span class="v">'+esc(c.fmt(r.v))+'</span></li>'}).join("")+'</ol>';
   var meIdx=-1;all.forEach(function(r,i){if(r.h===me)meIdx=i});
-  var seg=function(list,cur,attr){return '<div class="seg" role="group">'+list.map(function(o){return '<button class="'+(o.key===cur?"on":"")+'" data-'+attr+'="'+o.key+'" aria-pressed="'+(o.key===cur)+'">'+esc(o.label)+'</button>'}).join("")+'</div>'};
-  var h='<div class="list"><h3 class="cap">Top 10 performers</h3>'+seg(PERIODS,ui.period,"per")+seg(CATS.map(function(x){return {key:x.key,label:x.label.replace(/^(Top|Most|Best) /,"")}}),c.key,"met");
-  if(!top.length)h+='<div class="bars-empty">No results yet for this period.</div>';
-  else{
-    h+='<ol class="bars">'+top.map(function(r,i){return '<li'+(r.h===me?' class="me-row"':'')+'><div class="bar-top"><span class="n">'+(i+1)+'. @'+esc(r.h)+'</span><span class="v">'+esc(c.fmt(r.v))+'</span></div><div class="track"><i style="width:'+Math.max(4,r.v/max*100)+'%"></i></div></li>'}).join("")+'</ol>';
-    if(meIdx>=10)h+='<div class="bars-me">You: #'+(meIdx+1)+' · '+esc(c.fmt(all[meIdx].v))+'</div>';
-  }
+  if(meIdx>=10)h+='<div class="bars-me">You: #'+(meIdx+1)+' · '+esc(c.fmt(all[meIdx].v))+'</div>';
   return h+'</div>';
 }
 function detailHtml(day,me,past){
@@ -262,6 +297,7 @@ function bind(){
   if(f)f.oninput=function(){ui.find=f.value;try{localStorage.setItem("vc_find",f.value)}catch(e){}var me=norm(f.value),day=started()?today():state.startDate;document.getElementById("meBox").innerHTML=meHtml(day,me,roster());if(ui.open)render()};
   var mb=document.getElementById("moreBtn");if(mb)mb.onclick=function(){ui.open=!ui.open;render()};
   Array.prototype.forEach.call(document.querySelectorAll("[data-per]"),function(b){b.onclick=function(){ui.period=b.getAttribute("data-per");render()}});
+  Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"),function(b){b.onclick=function(){ui.mode=b.getAttribute("data-mode");render()}});
   Array.prototype.forEach.call(document.querySelectorAll("[data-met]"),function(b){b.onclick=function(){ui.metric=b.getAttribute("data-met");render()}});
   if(MODE!=="admin"||!ui.isOwner)return;
   var cb=document.getElementById("copyBtn");if(cb)cb.onclick=function(){var txt=document.getElementById("msgTxt").textContent;var done=function(){ui.copied=true;render();setTimeout(function(){ui.copied=false;render()},2000)};try{navigator.clipboard.writeText(txt).then(done,function(){selectMsg()})}catch(e){selectMsg()}};
