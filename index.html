@@ -172,7 +172,7 @@ function render(){
   h+='<div class="find"><input id="find" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type your TikTok @ to see your rank" value="'+esc(ui.find)+'"><div id="meBox">'+meHtml(day,me,R)+'</div></div>';
 
   // 3. one tap for more
-  h+='<button class="more cap" id="moreBtn" aria-expanded="'+ui.open+'">'+(ui.open?"Hide details":"See top performers and past winners")+'</button>';
+  h+='<button class="more cap" id="moreBtn" aria-expanded="'+ui.open+'">'+(ui.open?"Hide details":"See top 10 and past winners")+'</button>';
   if(ui.open)h+=detailHtml(day,me,past);
 
   h+='<p class="rules">Post the <b>Instant Premium Jersey Hijab</b>, tag it and add it to your showcase.<br>Each round runs 10am to 10am Eastern. New winners every day.'+(state.updatedAt?'<br>Updated '+esc(ago(state.updatedAt))+'.':'')+'</p>';
@@ -211,14 +211,14 @@ function periodScores(cat,day,p){
 }
 function chartHtml(day,me){
   var c=CATS.filter(function(x){return x.key===ui.metric})[0]||CATS[0];
-  var all=periodScores(c.key,day,ui.period),top=all.slice(0,5),max=top.length?top[0].v:0;
+  var all=periodScores(c.key,day,ui.period),top=all.slice(0,10),max=top.length?top[0].v:0;
   var meIdx=-1;all.forEach(function(r,i){if(r.h===me)meIdx=i});
   var seg=function(list,cur,attr){return '<div class="seg" role="group">'+list.map(function(o){return '<button class="'+(o.key===cur?"on":"")+'" data-'+attr+'="'+o.key+'" aria-pressed="'+(o.key===cur)+'">'+esc(o.label)+'</button>'}).join("")+'</div>'};
-  var h='<div class="list"><h3 class="cap">Top performers</h3>'+seg(PERIODS,ui.period,"per")+seg(CATS.map(function(x){return {key:x.key,label:x.label.replace(/^(Top|Most|Best) /,"")}}),c.key,"met");
+  var h='<div class="list"><h3 class="cap">Top 10 performers</h3>'+seg(PERIODS,ui.period,"per")+seg(CATS.map(function(x){return {key:x.key,label:x.label.replace(/^(Top|Most|Best) /,"")}}),c.key,"met");
   if(!top.length)h+='<div class="bars-empty">No results yet for this period.</div>';
   else{
     h+='<ol class="bars">'+top.map(function(r,i){return '<li'+(r.h===me?' class="me-row"':'')+'><div class="bar-top"><span class="n">'+(i+1)+'. @'+esc(r.h)+'</span><span class="v">'+esc(c.fmt(r.v))+'</span></div><div class="track"><i style="width:'+Math.max(4,r.v/max*100)+'%"></i></div></li>'}).join("")+'</ol>';
-    if(meIdx>=5)h+='<div class="bars-me">You: #'+(meIdx+1)+' · '+esc(c.fmt(all[meIdx].v))+'</div>';
+    if(meIdx>=10)h+='<div class="bars-me">You: #'+(meIdx+1)+' · '+esc(c.fmt(all[meIdx].v))+'</div>';
   }
   return h+'</div>';
 }
