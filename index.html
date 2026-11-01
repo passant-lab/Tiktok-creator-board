@@ -122,19 +122,20 @@ function count(n){var v=Number(n)||0;return v>=10000?(v/1000).toFixed(v>=100000?
 function pts(n){var v=Number(n)||0;return v+(v===1?" pt":" pts")}
 function parts(d){var o={};new Intl.DateTimeFormat("en-US",{timeZone:TZ,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(d).forEach(function(p){o[p.type]=p.value});return o}
 function estDay(d){var p=parts(d);return p.year+"-"+p.month+"-"+p.day}
-function today(){return estDay(new Date())}
+function compDay(d){return estDay(new Date(d.getTime()-10*3600*1000))} /* a round runs 10am ET to 10am ET and is named by its start date */
+function today(){return compDay(new Date())}
 function addDay(s,n){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]+n,12)).toISOString().slice(0,10)}
 function fmtDay(s,long){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2],12)).toLocaleDateString("en-US",long?{weekday:"short",month:"short",day:"numeric",timeZone:"UTC"}:{month:"short",day:"numeric",timeZone:"UTC"})}
 function started(){return today()>=state.startDate}
-function secsToMidnight(){var p=parts(new Date());return Math.max(0,86400-(+p.hour*3600+ +p.minute*60+ +p.second))}
-function secsToStart(){var p=parts(new Date()),a=state.startDate.split("-").map(Number);return Math.max(0,Math.round((Date.UTC(a[0],a[1]-1,a[2])-Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second))/1000))}
+function secsToMidnight(){var p=parts(new Date()),s=+p.hour*3600+ +p.minute*60+ +p.second;return s<36000?36000-s:86400-s+36000}
+function secsToStart(){var p=parts(new Date()),a=state.startDate.split("-").map(Number);return Math.max(0,Math.round((Date.UTC(a[0],a[1]-1,a[2],10)-Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second))/1000))}
 function hm(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h+"h "+(m<10?"0":"")+m+"m"}
 function roster(){var s={};(state.roster||[]).forEach(function(r){s[norm(r.handle)]=1});return s}
 function closedDays(){var out=[],d=state.startDate,t=today();while(d<t){out.push(d);d=addDay(d,1)}return out}
 
 function scores(cat,day){
   var R=roster(),m={};
-  if(cat==="views"){(state.videos||[]).forEach(function(v){var h=norm(v.handle);if(R[h]&&v.postedAt&&estDay(new Date(v.postedAt))===day)m[h]=(m[h]||0)+(Number(v.views)||0)})}
+  if(cat==="views"){(state.videos||[]).forEach(function(v){var h=norm(v.handle);if(R[h]&&v.postedAt&&compDay(new Date(v.postedAt))===day)m[h]=(m[h]||0)+(Number(v.views)||0)})}
   else{var src=((state.daily||{})[day]||{})[cat]||{};Object.keys(src).forEach(function(k){var h=norm(k);if(R[h])m[h]=(m[h]||0)+(Number(src[k])||0)})}
   return Object.keys(m).filter(function(h){return m[h]>0}).map(function(h){return {h:h,v:m[h]}}).sort(function(a,b){return b.v-a.v||a.h.localeCompare(b.h)});
 }
@@ -146,11 +147,11 @@ function render(){
 
   // 1. the one thing to look at
   var day=live?t:state.startDate;
-  h+='<div class="head"><span class="cap">'+(live?"Today":"Starts")+' · '+esc(fmtDay(day,true))+'</span><span class="timer">'+(live?'<span class="dot"></span>Ends in <b id="tm">'+hm(secsToMidnight())+'</b>':'Starts in <b id="tm">'+hm(secsToStart())+'</b>')+'</span></div>';
+  h+='<div class="head"><span class="cap">'+(live?"Today\u2019s round":"Starts")+' · '+esc(fmtDay(day,true))+'</span><span class="timer">'+(live?'<span class="dot"></span>Ends in <b id="tm">'+hm(secsToMidnight())+'</b>':'Starts in <b id="tm">'+hm(secsToStart())+'</b>')+'</span></div>';
   h+='<section class="card" aria-label="Leaders"><div class="card-title cap"><span>'+(live?"Leading now":"Today’s prizes")+'</span><span>$20 each</span></div>';
   CATS.forEach(function(c){var w=live?winner(c.key,day):null;
     h+='<div class="lead'+(w?'':' none')+'"><div class="what cap"><span>'+esc(c.label)+'</span><span class="prize">$20</span></div>'+
-       '<div class="who">'+(w?'@'+esc(w.h):(live?'No one yet':'Midnight ET'))+'</div><div class="val">'+(w&&w.v!=null?esc(c.fmt(w.v)):'')+'</div></div>'});
+       '<div class="who">'+(w?'@'+esc(w.h):(live?'No one yet':'10am ET'))+'</div><div class="val">'+(w&&w.v!=null?esc(c.fmt(w.v)):'')+'</div></div>'});
   h+='</section>';
 
   // 2. where am I
@@ -160,7 +161,7 @@ function render(){
   h+='<button class="more cap" id="moreBtn" aria-expanded="'+ui.open+'">'+(ui.open?"Hide details":"See full top 5 and past winners")+'</button>';
   if(ui.open)h+=detailHtml(day,me,past);
 
-  h+='<p class="rules">Post the <b>Instant Premium Jersey Hijab</b>, tag it and add it to your showcase.<br>New winners every day at midnight Eastern.'+(state.updatedAt?'<br>Updated '+esc(ago(state.updatedAt))+'.':'')+'</p>';
+  h+='<p class="rules">Post the <b>Instant Premium Jersey Hijab</b>, tag it and add it to your showcase.<br>Each round runs 10am to 10am Eastern. New winners every day.'+(state.updatedAt?'<br>Updated '+esc(ago(state.updatedAt))+'.':'')+'</p>';
 
   if(MODE==="admin"&&ui.isOwner)h+=adminHtml(yday);
   h+='</main>';
@@ -174,7 +175,7 @@ function ago(iso){var m=Math.round((Date.now()-new Date(iso).getTime())/60000);i
 function meHtml(day,me,R){
   if(!me)return "";
   if(!R[me])return '<div class="me">@'+esc(me)+' isn’t in the competition yet. Ask in the WhatsApp group.</div>';
-  if(!started())return '<div class="me">You’re in. The race starts at midnight Eastern.</div>';
+  if(!started())return '<div class="me">You’re in. The race starts at 10am Eastern.</div>';
   var bits=CATS.map(function(c){var s=scores(c.key,day),i=-1;s.forEach(function(r,j){if(r.h===me)i=j});return '<b>'+esc(c.label)+':</b> '+(i>=0?'#'+(i+1)+' ('+esc(c.fmt(s[i].v))+')':'not ranked yet')});
   return '<div class="me">'+bits.join('<br>')+'</div>';
 }
@@ -209,7 +210,7 @@ function adminHtml(yday){
      CATS.map(function(c){return '<label class="ws" for="w_'+c.key+'">'+esc(c.label)+' winner<select class="field" id="w_'+c.key+'" data-win="'+c.key+'"><option value="">Automatic (from rankings)</option>'+Rl.map(function(k){return '<option value="'+esc(k)+'"'+(norm(w[c.key])===k?" selected":"")+'>@'+esc(k)+'</option>'}).join("")+'</select></label>'}).join("")+'</div>';
   h+='<div class="row"><button class="btn cap" id="saveBtn"'+(ui.saving?" disabled":"")+'>'+(ui.saving?"Saving…":"Save changes")+'</button></div><div class="save-msg" role="status">'+esc(ui.msg)+'</div>';
   // videos for the team
-  var vids=(state.videos||[]).filter(function(v){return v.postedAt&&estDay(new Date(v.postedAt))===hday}).sort(function(a,b){return (b.views||0)-(a.views||0)});
+  var vids=(state.videos||[]).filter(function(v){return v.postedAt&&compDay(new Date(v.postedAt))===hday}).sort(function(a,b){return (b.views||0)-(a.views||0)});
   h+='<div class="blk"><h2 class="cap">Videos posted '+esc(fmtDay(hday,true))+' ('+vids.length+')</h2>'+(vids.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Creator</th><th class="r">Views</th><th class="r">Sales</th><th></th></tr></thead><tbody>'+vids.map(function(v){return '<tr><td>@'+esc(norm(v.handle))+'</td><td class="r">'+count(v.views)+'</td><td class="r">'+money(v.gmv)+'</td><td>'+(v.url?'<a href="'+esc(v.url)+'" target="_blank" rel="noopener">Watch</a>':'')+'</td></tr>'}).join("")+'</tbody></table></div>':'<p>None yet.</p>')+'</div>';
   return h+'</section>';
 }
