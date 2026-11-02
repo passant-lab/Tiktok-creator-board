@@ -1,1 +1,141 @@
-{"version":1,"product":"Instant Premium Jersey Hijab","zenithProductId":"1729666423255700474","timezone":"America/New_York","startDate":"2026-11-01","updatedAt":null,"roster":[],"videos":[],"daily":{},"samples":[],"winners":{}}
+{
+  "version": 1,
+  "product": "Instant Premium Jersey Hijab",
+  "zenithProductId": "1729666423255700474",
+  "timezone": "America/New_York",
+  "startDate": "2026-11-01",
+  "updatedAt": "2026-11-02T16:23:03.000Z",
+  "roster": [
+    {
+      "handle": "bosankafinds",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "maidahijab2",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "heelajalali2023",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "nini.kone",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "thatonesici",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "annacbscents",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "fatyshop01",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "hudaali403",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "rehemaissa33",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "jalikah40",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "cooking_luma1234",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "lina.la.arabe",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "littlefootfreedomfighter",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "glowglamwithshugufa",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "lifewith_lubna",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "bindya010",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "womenofheartsbeauty",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "smartcart6",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "heelaafg",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "efat254",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "queendebi11",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "noreenshahbaz",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "noureen103",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "adi_fashionfinds",
+      "added": "2026-10-31"
+    },
+    {
+      "handle": "maryclairemm",
+      "added": "2026-11-02"
+    }
+  ],
+  "videos": [
+    {
+      "id": "7703281624082910478",
+      "handle": "heelajalali2023",
+      "url": "https://www.tiktok.com/@heelajalali2023/video/7703281624082910478",
+      "postedAt": "2026-11-01T19:07:22Z",
+      "views": 82,
+      "orders": 0,
+      "gmv": 0
+    },
+    {
+      "id": "7703410929693773069",
+      "handle": "noreenshahbaz",
+      "url": "https://www.tiktok.com/@noreenshahbaz/video/7703410929693773069",
+      "postedAt": "2026-11-02T03:29:13Z",
+      "views": 344,
+      "orders": 0,
+      "gmv": 0
+    }
+  ],
+  "daily": {
+    "2026-11-01": {
+      "helper": {}
+    }
+  },
+  "samples": [],
+  "winners": {
+    "2026-11-01": {
+      "views": "maryclairemm"
+    }
+  }
+}
