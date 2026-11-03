@@ -139,7 +139,7 @@ try{ui.find=localStorage.getItem("vc_find")||""}catch(e){}
 var CATS=[
  {key:"sales",label:"Top sales",emoji:"💰",fmt:money},
  {key:"views",label:"Most views",emoji:"👀",fmt:count},
- {key:"helper",label:"Best helper",emoji:"🤝",fmt:pts}
+ {key:"helper",label:"Most Engaged",emoji:"\uD83D\uDCAC",fmt:pts}
 ];
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function norm(h){return String(h||"").trim().replace(/^@+/,"").toLowerCase()}
@@ -266,9 +266,17 @@ function detailHtml(day,me,past){
 
 function winnersMessage(d){
   if(!d)return "";
-  var lines=["🏆 VOILE CHIC WINNERS · "+fmtDay(d,true),""];
-  CATS.forEach(function(c){var w=winner(c.key,d);lines.push(c.emoji+" "+c.label+": "+(w?"@"+w.h+(w.v!=null&&c.key!=="helper"?" ("+c.fmt(w.v)+")":""):"no winner"))});
-  lines.push("","$20 each. Congrats! 🎉","New day, new chance. Post your Instant Premium Jersey Hijab video today.","","Your rank: "+PUBLIC_URL);
+  var lines=["\uD83C\uDFC6 VOILE CHIC WINNERS \u00b7 "+fmtDay(d,true),""],won=[],noSales=false;
+  CATS.forEach(function(c){var w=winner(c.key,d),txt;
+    if(w){won.push("@"+w.h);txt="@"+w.h+(c.key==="sales"&&w.v!=null?" ("+c.fmt(w.v)+")":"")}
+    else if(c.key==="sales"){noSales=true;txt="No sales generated"}
+    else txt="no winner";
+    lines.push(c.emoji+" "+c.label+": "+txt)});
+  lines.push("");
+  var uw=won.filter(function(x,i){return won.indexOf(x)===i});
+  if(won.length)lines.push("Congratulations "+uw.join(" and ")+"! \uD83C\uDF89 "+(won.length===1?"You win $20.":"$20 per prize."));
+  if(noSales)lines.push("No sales yesterday, and that\u2019s okay. Today is a new opportunity to generate sales \uD83D\uDCAA");
+  lines.push("Post your Instant Premium Jersey Hijab video today.","","Your rank: "+PUBLIC_URL);
   return lines.join("\n");
 }
 function adminHtml(yday){
@@ -282,7 +290,7 @@ function adminHtml(yday){
   // creators
   h+='<div class="blk"><h2 class="cap">Creators in the competition ('+Rl.length+')</h2><p>Paste TikTok handles from the WhatsApp group. Commas or new lines both work.</p><div class="row"><input class="field" id="addH" type="text" autocomplete="off" placeholder="@name1, @name2"><button class="btn cap" id="addBtn">Add</button></div><div class="chips">'+Rl.map(function(k){return '<span class="chip">@'+esc(k)+'<button data-rm="'+esc(k)+'" aria-label="Remove @'+esc(k)+'">×</button></span>'}).join("")+'</div></div>';
   // helper + winners
-  h+='<div class="blk"><h2 class="cap">Helper points and winners</h2><label class="ws">Day<select class="field" id="hday">'+days.slice().reverse().map(function(x){return '<option value="'+x+'"'+(x===hday?" selected":"")+'>'+esc(fmtDay(x,true))+'</option>'}).join("")+'</select></label>'+
+  h+='<div class="blk"><h2 class="cap">Most Engaged points and winners</h2><label class="ws">Day<select class="field" id="hday">'+days.slice().reverse().map(function(x){return '<option value="'+x+'"'+(x===hday?" selected":"")+'>'+esc(fmtDay(x,true))+'</option>'}).join("")+'</select></label>'+
      (Rl.length?Rl.map(function(k){return '<label class="hp" for="hp_'+esc(k)+'"><span>@'+esc(k)+'</span><input class="field" type="number" min="0" step="1" id="hp_'+esc(k)+'" data-hp="'+esc(k)+'" value="'+(hp[k]||"")+'" placeholder="0"></label>'}).join(""):'<p>Add creators first.</p>')+
      CATS.map(function(c){return '<label class="ws" for="w_'+c.key+'">'+esc(c.label)+' winner<select class="field" id="w_'+c.key+'" data-win="'+c.key+'"><option value="">Automatic (from rankings)</option>'+Rl.map(function(k){return '<option value="'+esc(k)+'"'+(norm(w[c.key])===k?" selected":"")+'>@'+esc(k)+'</option>'}).join("")+'</select></label>'}).join("")+'</div>';
   h+='<div class="row"><button class="btn cap" id="saveBtn"'+(ui.saving?" disabled":"")+'>'+(ui.saving?"Saving…":"Save changes")+'</button></div><div class="save-msg" role="status">'+esc(ui.msg)+'</div>';
